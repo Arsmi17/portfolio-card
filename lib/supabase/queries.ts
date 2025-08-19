@@ -2,9 +2,33 @@ import { createClient } from "./server"
 import type { Profile, Project, Blog, ContactResponse } from "./types"
 
 // Profile queries
+// export async function getProfile(): Promise<Profile | null> {
+//   const supabase = createClient()
+//   const { data, error } = await supabase.from("profiles").select("*").single()
+
+//   if (error) {
+//     console.error("Error fetching profile:", error)
+//     return null
+//   }
+
+//   return data
+// }
+
+// export async function getPublicProfile(): Promise<Profile | null> {
+//   const supabase = createClient()
+//   const { data, error } = await supabase.from("profiles").select("*").limit(1).single()
+
+//   if (error) {
+//     console.error("Error fetching public profile:", error)
+//     return null
+//   }
+
+//   return data
+// }
+
 export async function getProfile(): Promise<Profile | null> {
   const supabase = createClient()
-  const { data, error } = await supabase.from("profiles").select("*").single()
+  const { data, error } = await supabase.from("profiles").select("*").maybeSingle()
 
   if (error) {
     console.error("Error fetching profile:", error)
@@ -16,7 +40,7 @@ export async function getProfile(): Promise<Profile | null> {
 
 export async function getPublicProfile(): Promise<Profile | null> {
   const supabase = createClient()
-  const { data, error } = await supabase.from("profiles").select("*").limit(1).single()
+  const { data, error } = await supabase.from("profiles").select("*").maybeSingle()
 
   if (error) {
     console.error("Error fetching public profile:", error)
@@ -25,6 +49,7 @@ export async function getPublicProfile(): Promise<Profile | null> {
 
   return data
 }
+
 
 // Project queries
 export async function getProjects(): Promise<Project[]> {

@@ -3,17 +3,12 @@ export interface Profile {
   name: string
   bio?: string
   avatar_url?: string
-  social?: {
-    twitter?: string
-    github?: string
-    linkedin?: string
-    youtube?: string
-  }
   cv_url?: string
   contact?: string
   email?: string
   created_at: string
   updated_at: string
+  social?: { [key: string]: unknown } // JSONB flexible type
 }
 
 export interface Project {

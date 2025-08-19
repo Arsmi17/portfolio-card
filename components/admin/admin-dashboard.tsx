@@ -31,6 +31,7 @@ import {
 } from "lucide-react"
 import type { Project, Blog, ContactResponse, Profile } from "@/lib/supabase/types"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"; // Import the new editor
+import { Textarea } from "@/components/ui/textarea"
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -213,18 +214,24 @@ export default function AdminDashboard() {
     }
   };
 
-
   const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(e.currentTarget);
+    const socialJsonString = formData.get("social") as string;
+    let socialData;
 
-    const socialData = {
-      twitter: formData.get("twitter_url") as string,
-      github: formData.get("github_url") as string,
-      linkedin: formData.get("linkedin_url") as string,
-      youtube: formData.get("youtube_url") as string,
+    try {
+      socialData = JSON.parse(socialJsonString);
+    } catch (error) {
+      toast({
+        title: "Invalid JSON",
+        description: "The social links JSON is not correctly formatted.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
     }
 
     const profileData = {
@@ -234,29 +241,40 @@ export default function AdminDashboard() {
       email: formData.get("email") as string,
       cv_url: formData.get("cv_url") as string,
       social: socialData,
-      avatar: formData.get("avatar") as string,
-    }
+      avatar_url: formData.get("avatar") as string,
+    };
 
     try {
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profileData),
-      })
+      });
 
       if (response.ok) {
-        toast({ title: "Success", description: "Profile updated successfully!" })
-        fetchProfile()
+        toast({
+          title: "Success",
+          description: "Profile updated successfully!",
+        });
+        fetchProfile();
       } else {
-        const error = await response.json()
-        toast({ title: "Error", description: error.error, variant: "destructive" })
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      toast({ title: "Error", description: "Failed to update profile", variant: "destructive" })
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDeleteProject = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return
@@ -593,7 +611,7 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <Label htmlFor="blog-content">Content</Label>
-                                        <RichTextEditor
+                    <RichTextEditor
                       id="blog-content"
                       name="content"
                       onContentChange={setBlogContent}
@@ -719,7 +737,7 @@ export default function AdminDashboard() {
                     <Input
                       id="name"
                       name="name"
-                      defaultValue={profile?.name || "Harsh Mistry"}
+                      defaultValue={profile?.name || ""}
                       placeholder="Your full name"
                       required
                     />
@@ -732,7 +750,7 @@ export default function AdminDashboard() {
                       name="bio"
                       placeholder="Tell us about yourself..."
                       rows={4}
-                      defaultValue={profile?.bio || "A passionate game developer"}
+                      defaultValue={profile?.bio || ""}
                     />
                   </div>
 
@@ -742,7 +760,7 @@ export default function AdminDashboard() {
                       <Input
                         id="contact"
                         name="contact"
-                        defaultValue={profile?.contact || "7802091131"}
+                        defaultValue={profile?.contact || ""}
                         placeholder="Your contact number"
                         required
                       />
@@ -753,7 +771,7 @@ export default function AdminDashboard() {
                         id="email"
                         name="email"
                         type="email"
-                        defaultValue={profile?.email || "hpmistry99@gmail.com"}
+                        defaultValue={profile?.email || ""}
                         placeholder="Your email address"
                         required
                       />
@@ -765,7 +783,7 @@ export default function AdminDashboard() {
                     <Input
                       id="cv_url"
                       name="cv_url"
-                      defaultValue={profile?.cv_url || "https://www.cv.com"}
+                      defaultValue={profile?.cv_url || ""}
                       placeholder="Link to your CV"
                     />
                   </div>
@@ -783,45 +801,14 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Social Links</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="twitter_url">Twitter/X</Label>
-                        <Input
-                          id="twitter_url"
-                          name="twitter_url"
-                          placeholder="https://twitter.com/username"
-                          defaultValue={profile?.social?.twitter || "https://twitter.com"}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="github_url">GitHub</Label>
-                        <Input
-                          id="github_url"
-                          name="github_url"
-                          placeholder="https://github.com/username"
-                          defaultValue={profile?.social?.github || "https://github.com"}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="linkedin_url">LinkedIn</Label>
-                        <Input
-                          id="linkedin_url"
-                          name="linkedin_url"
-                          placeholder="https://linkedin.com/in/username"
-                          defaultValue={profile?.social?.linkedin || "https://linkedin.com"}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="youtube_url">YouTube</Label>
-                        <Input
-                          id="youtube_url"
-                          name="youtube_url"
-                          placeholder="https://youtube.com/@username"
-                          defaultValue={profile?.social?.youtube || "https://youtube.com"}
-                        />
-                      </div>
-                    </div>
+                    <h3 className="text-lg font-semibold">Social Links (JSON)</h3>
+                     <Textarea
+                      id="social"
+                      name="social"
+                      placeholder='{ "github": "https://...", "twitter": "https://..." }'
+                      rows={5}
+                      defaultValue={JSON.stringify(profile?.social || {}, null, 2)}
+                    />
                   </div>
 
                   <Button type="submit" className="w-full" disabled={loading}>
@@ -871,7 +858,14 @@ export default function AdminDashboard() {
                           <TableRow key={response.id}>
                             <TableCell className="font-mono text-sm">#{index + 1}</TableCell>
                             <TableCell className="font-medium">{response.username}</TableCell>
-                            <TableCell>{response.email}</TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant="secondary" 
+                                className="rounded-sm px-2 py-1 font-mono text-xs"
+                              >
+                                {response.email}
+                              </Badge>
+                            </TableCell>
                             <TableCell>{new Date(response.created_at).toLocaleDateString()}</TableCell>
                             <TableCell className="max-w-xs truncate">{response.message}</TableCell>
                             <TableCell>
@@ -922,7 +916,14 @@ export default function AdminDashboard() {
                           <TableRow key={response.id}>
                             <TableCell className="font-mono text-sm">#{index + 1}</TableCell>
                             <TableCell className="font-medium">{response.username}</TableCell>
-                            <TableCell>{response.email}</TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant="secondary" 
+                                className="rounded-sm px-2 py-1 font-mono text-xs"
+                              >
+                                {response.email}
+                              </Badge>
+                            </TableCell>
                             <TableCell>{new Date(response.created_at).toLocaleDateString()}</TableCell>
                             <TableCell>{new Date(response.updated_at).toLocaleDateString()}</TableCell>
                             <TableCell className="max-w-xs truncate">{response.message}</TableCell>

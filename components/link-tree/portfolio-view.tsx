@@ -21,8 +21,22 @@ import {
   Twitter,
   Linkedin,
   Youtube,
+  Instagram,
+  Facebook,
+  MessageSquare, 
   ExternalLink,
 } from "lucide-react"
+import {
+  FaGithub,
+  FaTwitter,
+  FaLinkedin,
+  FaYoutube,
+  FaInstagram,
+  FaFacebook,
+  FaDiscord,
+  FaWhatsapp,
+  FaGamepad,
+} from "react-icons/fa";
 import type { Profile } from "@/hooks/use-profile"
 import type { LinkItemProps } from "@/hooks/use-links"
 import type { Project, Blog, Profile as DBProfile } from "@/lib/supabase/types"
@@ -88,10 +102,14 @@ export function PortfolioView({ profile: initialProfile, links }: PortfolioViewP
     if (!profile?.social) return []
 
     const socialIcons: Record<string, React.ComponentType<any>> = {
-      github: Github,
-      twitter: Twitter,
-      linkedin: Linkedin,
-      youtube: Youtube,
+      github: FaGithub,
+      twitter: FaTwitter,
+      linkedin: FaLinkedin,
+      youtube: FaYoutube,
+      instagram: FaInstagram,
+      facebook: FaFacebook,
+      discord: FaDiscord,
+      whatsapp: FaWhatsapp
     }
 
     return Object.entries(profile.social)
