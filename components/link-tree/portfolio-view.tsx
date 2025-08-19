@@ -418,7 +418,7 @@ export function PortfolioView({ profile: initialProfile, links }: PortfolioViewP
                             )}
                             <h3 className="font-semibold text-base mb-2">{project.title}</h3>
                             <div
-                              className="text-sm text-muted-foreground mb-6 flex-1 line-clamp-6"
+                              className="text-sm text-muted-foreground mb-5 flex-1 line-clamp-6"
                               dangerouslySetInnerHTML={{
                                 __html: project.description,
                               }}

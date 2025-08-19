@@ -84,8 +84,12 @@ export function CardFlip({ frontContent, backContent, isFlipped, onFlip }: CardF
   }, [isFlipping])
 
   return (
+<<<<<<< HEAD
     // <div className="perspective">
     <div className={cn(isFlipping && "perspective")}>
+=======
+    <div className="perspective">
+>>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
       <div
         className={cn(
           "card-flip-container relative transition-transform duration-400 transform-style-3d",

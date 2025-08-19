@@ -214,6 +214,7 @@ export default function AdminDashboard() {
     }
   };
 
+<<<<<<< HEAD
   // const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault();
   //   setLoading(true);
@@ -326,6 +327,69 @@ export default function AdminDashboard() {
     setLoading(false);
   }
 };
+=======
+  const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const socialJsonString = formData.get("social") as string;
+    let socialData;
+
+    try {
+      socialData = JSON.parse(socialJsonString);
+    } catch (error) {
+      toast({
+        title: "Invalid JSON",
+        description: "The social links JSON is not correctly formatted.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
+    const profileData = {
+      name: formData.get("name") as string,
+      bio: formData.get("bio") as string,
+      contact: formData.get("contact") as string,
+      email: formData.get("email") as string,
+      cv_url: formData.get("cv_url") as string,
+      social: socialData,
+      avatar_url: formData.get("avatar") as string,
+    };
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profileData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Profile updated successfully!",
+        });
+        fetchProfile();
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+>>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
 
   const handleDeleteProject = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return

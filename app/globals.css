@@ -370,8 +370,11 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
+<<<<<<< HEAD
   width: 100vw;
   height: 100vh;
+=======
+>>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
@@ -386,6 +389,7 @@
   max-width: 90vw;
   max-height: 90vh;
   width: 100%;
+<<<<<<< HEAD
   height: 80vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -395,6 +399,12 @@
    max-height: 450px;
  }
 
+=======
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+>>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
 @media (min-width: 768px) {
   .modal-content {
     max-width: 80vw;
