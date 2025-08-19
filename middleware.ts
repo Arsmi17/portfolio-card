@@ -1,21 +1,44 @@
-import type { NextRequest } from "next/server"
-import { NextResponse as Response } from "next/server"
+import type { NextRequest } from "next/server";
+import { NextResponse as Response } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname } = request.nextUrl;
+  const adminSession = request.cookies.get("admin_session");
+  const isAuthenticated = adminSession?.value === "authenticated";
 
-  // Check if accessing admin routes
-  if (pathname.startsWith("/admin")) {
-    const adminSession = request.cookies.get("admin_session")
+  const isAuthRoute = pathname.startsWith("/auth/login");
+  const isApiAuthRoute = pathname.startsWith("/api/auth");
 
-    if (!adminSession || adminSession.value !== "authenticated") {
-      // Redirect to login if not authenticated
-      return Response.redirect(new URL("/auth/login", request.url))
+  // Define public routes that don't require authentication
+  const isPublicAsset = pathname === "/";
+  const isPublicApiGet =
+    (pathname.startsWith("/api/blogs") ||
+      pathname.startsWith("/api/projects") ||
+      pathname.startsWith("/api/profile")) &&
+    request.method === "GET";
+  const isPublicContactApi =
+    pathname === "/api/contact" && request.method === "POST";
+
+  // If authenticated, redirect from login to admin
+  if (isAuthenticated && isAuthRoute) {
+    return Response.redirect(new URL("/admin", request.url));
+  }
+
+  // If not authenticated, protect admin and necessary API routes
+  if (
+    !isAuthenticated &&
+    !isAuthRoute &&
+    !isPublicAsset &&
+    !isPublicApiGet &&
+    !isPublicContactApi &&
+    !isApiAuthRoute
+  ) {
+    if (pathname.startsWith("/admin") || pathname.startsWith("/api/")) {
+      return Response.redirect(new URL("/auth/login", request.url));
     }
   }
 
-  // Allow all other requests to proceed
-  return Response.next()
+  return Response.next();
 }
 
 export const config = {
@@ -29,4 +52,4 @@ export const config = {
      */
     "/((?!_next/static|_next/image|favicon.ico|.*.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
-}
+};

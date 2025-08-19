@@ -5,8 +5,6 @@ import { useFormStatus } from "react-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Loader2, Shield } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
 import { verifyOTP } from "@/lib/actions"
 
 function SubmitButton() {
@@ -30,24 +28,16 @@ function SubmitButton() {
 }
 
 export default function LoginForm() {
-  const router = useRouter()
   const [verifyState, verifyAction] = useActionState(verifyOTP, null)
-
-  // Handle successful verification
-  useEffect(() => {
-    if (verifyState?.success) {
-      router.push("/admin")
-    }
-  }, [verifyState, router])
 
   return (
     <div className="w-full max-w-md space-y-8">
       <div className="space-y-2 text-center">
         <h1 className="text-4xl font-semibold tracking-tight">
-          Verify Your Identity
+          Admin Access
         </h1>
         <p className="text-lg text-muted-foreground">
-          Enter the 6-digit code to continue
+          Enter the verification code to continue
         </p>
       </div>
 
@@ -80,7 +70,7 @@ export default function LoginForm() {
       </form>
 
       <div className="text-center text-sm text-muted-foreground">
-        <p>Secure admin access for Harsh Mistry's portfolio</p>
+        <p>Secure admin access for your portfolio</p>
       </div>
     </div>
   )
