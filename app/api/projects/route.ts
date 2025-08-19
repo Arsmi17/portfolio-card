@@ -23,8 +23,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       title,
-      quick_description,
-      full_description,
+      description,
       youtube_link,
       project_url,
       category,
@@ -35,8 +34,7 @@ export async function POST(request: NextRequest) {
       .from("projects")
       .insert({
         title,
-        quick_description,
-        full_description,
+        description,
         youtube_link,
         project_url,
         category,

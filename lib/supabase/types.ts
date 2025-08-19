@@ -7,8 +7,11 @@ export interface Profile {
     twitter?: string
     github?: string
     linkedin?: string
+    youtube?: string
   }
   cv_url?: string
+  contact?: string
+  email?: string
   created_at: string
   updated_at: string
 }
@@ -16,8 +19,7 @@ export interface Profile {
 export interface Project {
   id: string
   title: string
-  quick_description: string
-  full_description?: string
+  description: string
   youtube_link?: string
   project_url?: string
   category: string
@@ -44,7 +46,9 @@ export interface ContactResponse {
   email: string
   message: string
   is_archived: boolean
+  is_read: boolean
   created_at: string
+  updated_at: string
 }
 
 export interface Database {
@@ -67,8 +71,8 @@ export interface Database {
       }
       contact_responses: {
         Row: ContactResponse
-        Insert: Omit<ContactResponse, "id" | "created_at">
-        Update: Partial<Omit<ContactResponse, "id" | "created_at">>
+        Insert: Omit<ContactResponse, "id" | "created_at" | "updated_at">
+        Update: Partial<Omit<ContactResponse, "id" | "created_at" | "updated_at">>
       }
     }
   }

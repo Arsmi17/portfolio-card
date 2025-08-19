@@ -11,8 +11,7 @@ export async function PUT(
     const body = await request.json();
     const {
       title,
-      quick_description,
-      full_description,
+      description,
       image_url,
       project_url,
       category,
@@ -23,8 +22,7 @@ export async function PUT(
       .from("projects")
       .update({
         title,
-        quick_description,
-        full_description,
+        description,
         image_url,
         project_url,
         category,

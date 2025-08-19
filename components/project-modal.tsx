@@ -1,33 +1,35 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { X, ExternalLink } from "lucide-react"
-import type { Project } from "@/lib/supabase/types"
+import type React from "react";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { X, ExternalLink } from "lucide-react";
+import type { Project } from "@/lib/supabase/types";
 
 interface ProjectModalProps {
-  project: Project
-  isOpen: boolean
-  onClose: () => void
+  project: Project;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   const getYouTubeEmbedUrl = (url: string) => {
     if (url.includes("watch?v=")) {
-      return `https://www.youtube.com/embed/${url.split("watch?v=")[1].split("&")[0]}?autoplay=1`
+      return `https://www.youtube.com/embed/${
+        url.split("watch?v=")[1].split("&")[0]
+      }?autoplay=1`;
     }
-    return `https://www.youtube.com/embed/${url.split("/").pop()}?autoplay=1`
-  }
+    return `https://www.youtube.com/embed/${url.split("/").pop()}?autoplay=1`;
+  };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -59,37 +61,43 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
           <div className="flex flex-col">
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
               <div className="space-y-2">
-                <CardTitle className="text-2xl font-bold">{project.title}</CardTitle>
+                <CardTitle className="text-2xl font-bold">
+                  {project.title}
+                </CardTitle>
                 <Badge variant="outline" className="w-fit">
                   {project.category}
                 </Badge>
               </div>
-              <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="h-8 w-8 p-0"
+              >
                 <X className="h-4 w-4" />
               </Button>
             </CardHeader>
 
             <CardContent className="flex-1 space-y-6">
-              {/* Quick Description */}
+              {/* Description */}
               <div>
                 <h3 className="font-semibold text-lg mb-2">Overview</h3>
-                <p className="text-muted-foreground leading-relaxed">{project.quick_description}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: project.description }}
+                />
               </div>
-
-              {/* Full Description */}
-              {project.full_description && (
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Details</h3>
-                  <p className="text-muted-foreground leading-relaxed">{project.full_description}</p>
-                </div>
-              )}
 
               {/* Project Links */}
               <div className="space-y-3">
                 <h3 className="font-semibold text-lg">Links</h3>
                 <div className="flex flex-col gap-2">
                   {project.project_url && (
-                    <Button variant="outline" asChild className="justify-start bg-transparent">
+                    <Button
+                      variant="outline"
+                      asChild
+                      className="justify-start bg-transparent"
+                    >
                       <a
                         href={project.project_url}
                         target="_blank"
@@ -102,7 +110,11 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                     </Button>
                   )}
                   {project.youtube_link && (
-                    <Button variant="outline" asChild className="justify-start bg-transparent">
+                    <Button
+                      variant="outline"
+                      asChild
+                      className="justify-start bg-transparent"
+                    >
                       <a
                         href={project.youtube_link}
                         target="_blank"
@@ -122,11 +134,15 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground">Created:</span>
-                    <p className="font-medium">{new Date(project.created_at).toLocaleDateString()}</p>
+                    <p className="font-medium">
+                      {new Date(project.created_at).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Status:</span>
-                    <p className="font-medium">{project.is_featured ? "Featured" : "Standard"}</p>
+                    <p className="font-medium">
+                      {project.is_featured ? "Featured" : "Standard"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -135,5 +151,5 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

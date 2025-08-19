@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -31,6 +30,7 @@ import {
   Filter,
 } from "lucide-react"
 import type { Project, Blog, ContactResponse, Profile } from "@/lib/supabase/types"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"; // Import the new editor
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -56,6 +56,9 @@ export default function AdminDashboard() {
   const [blogFilter, setBlogFilter] = useState("all")
   const [sortBy, setSortBy] = useState("created_at")
   const [sortOrder, setSortOrder] = useState("desc")
+
+  const [projectDescription, setProjectDescription] = useState("");
+  const [blogContent, setBlogContent] = useState("");
 
   const { toast } = useToast()
 
@@ -118,79 +121,98 @@ export default function AdminDashboard() {
   }, [])
 
   const handleProjectSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-    const formData = new FormData(e.currentTarget)
-    const projectData = {
-      title: formData.get("title") as string,
-      quick_description: formData.get("quick_description") as string,
-      full_description: formData.get("full_description") as string,
-      youtube_link: formData.get("youtube_link") as string,
-      project_url: formData.get("project_url") as string,
-      category: formData.get("category") as string,
-      is_featured: formData.get("is_featured") === "on",
-    }
+      const formData = new FormData(e.currentTarget);
+
+      const projectData = {
+        title: formData.get("title") as string,
+        description: projectDescription,
+        youtube_link: formData.get("youtube_link") as string,
+        project_url: formData.get("project_url") as string,
+        category: formData.get("category") as string,
+        is_featured: formData.get("is_featured") === "on",
+      };
 
     try {
-      console.log("[v0] Submitting project data:", projectData)
       const response = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(projectData),
-      })
+      });
 
       if (response.ok) {
-        toast({ title: "Success", description: "Project added successfully!" })
-        fetchProjects()
-        e.currentTarget.reset()
+        toast({ title: "Success", description: "Project added successfully!" });
+        fetchProjects();
+        e.currentTarget.reset();
+        setProjectDescription("");
       } else {
-        const error = await response.json()
-        console.log("[v0] Project submission error:", error)
-        toast({ title: "Error", description: error.error, variant: "destructive" })
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.log("[v0] Project submission catch error:", error)
-      toast({ title: "Error", description: "Failed to add project", variant: "destructive" })
+      toast({
+        title: "Error",
+        description: "Failed to add project",
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleBlogSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(e.currentTarget);
     const blogData = {
       title: formData.get("title") as string,
       description: formData.get("description") as string,
-      content: formData.get("content") as string,
+      content: blogContent,
       category: formData.get("category") as string,
       is_published: formData.get("is_published") === "on",
-    }
+    };
 
     try {
       const response = await fetch("/api/blogs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(blogData),
-      })
+      });
 
       if (response.ok) {
-        toast({ title: "Success", description: "Blog post added successfully!" })
-        fetchBlogs()
-        e.currentTarget.reset()
+        toast({
+          title: "Success",
+          description: "Blog post added successfully!",
+        });
+        fetchBlogs();
+        e.currentTarget.reset();
+        setBlogContent("");
       } else {
-        const error = await response.json()
-        toast({ title: "Error", description: error.error, variant: "destructive" })
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      toast({ title: "Error", description: "Failed to add blog post", variant: "destructive" })
+      toast({
+        title: "Error",
+        description: "Failed to add blog post",
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
 
   const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -216,7 +238,6 @@ export default function AdminDashboard() {
     }
 
     try {
-      console.log("[v0] Submitting profile data:", profileData)
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -228,11 +249,9 @@ export default function AdminDashboard() {
         fetchProfile()
       } else {
         const error = await response.json()
-        console.log("[v0] Profile update error:", error)
         toast({ title: "Error", description: error.error, variant: "destructive" })
       }
     } catch (error) {
-      console.log("[v0] Profile update catch error:", error)
       toast({ title: "Error", description: "Failed to update profile", variant: "destructive" })
     } finally {
       setLoading(false)
@@ -305,7 +324,7 @@ export default function AdminDashboard() {
     .filter(
       (project) =>
         project.title.toLowerCase().includes(projectSearch.toLowerCase()) ||
-        project.quick_description.toLowerCase().includes(projectSearch.toLowerCase()),
+        project.description.toLowerCase().includes(projectSearch.toLowerCase()),
     )
     .filter(
       (project) =>
@@ -433,16 +452,11 @@ export default function AdminDashboard() {
                     <Input id="title" name="title" placeholder="Project title" required />
                   </div>
                   <div>
-                    <Label htmlFor="quick_description">Quick Description</Label>
-                    <Input id="quick_description" name="quick_description" placeholder="Brief description" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="full_description">Full Description</Label>
-                    <Textarea
-                      id="full_description"
-                      name="full_description"
-                      placeholder="Detailed project description"
-                      rows={3}
+                    <Label htmlFor="description">Description</Label>
+                    <RichTextEditor
+                      id="description"
+                      name="description"
+                      onContentChange={setProjectDescription}
                     />
                   </div>
                   <div>
@@ -512,7 +526,7 @@ export default function AdminDashboard() {
                         <TableRow>
                           <TableHead>ID</TableHead>
                           <TableHead>Title</TableHead>
-                          <TableHead>Quick Description</TableHead>
+                          <TableHead>Description</TableHead>
                           <TableHead>Category</TableHead>
                           <TableHead>Featured</TableHead>
                           <TableHead>Actions</TableHead>
@@ -523,7 +537,7 @@ export default function AdminDashboard() {
                           <TableRow key={project.id}>
                             <TableCell className="font-mono text-sm">#{index + 1}</TableCell>
                             <TableCell className="font-medium">{project.title}</TableCell>
-                            <TableCell className="max-w-xs truncate">{project.quick_description}</TableCell>
+                            <TableCell className="max-w-xs truncate">{project.description}</TableCell>
                             <TableCell>
                               <Badge variant="outline">{project.category}</Badge>
                             </TableCell>
@@ -579,7 +593,11 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <Label htmlFor="blog-content">Content</Label>
-                    <Textarea id="blog-content" name="content" placeholder="Blog post content" rows={4} />
+                                        <RichTextEditor
+                      id="blog-content"
+                      name="content"
+                      onContentChange={setBlogContent}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="blog-category">Category</Label>
