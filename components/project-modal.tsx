@@ -1,10 +1,7 @@
 "use client";
 
 import type React from "react";
-<<<<<<< HEAD
 import { createPortal } from "react-dom";
-=======
->>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,11 +32,7 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
     }
   };
 
-<<<<<<< HEAD
   return createPortal(
-=======
-  return (
->>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
         <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
@@ -86,28 +79,18 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
               </Button>
             </CardHeader>
 
-<<<<<<< HEAD
             <CardContent className="flex-1 space-y-6 overflow-y-auto description-area">
               {/* Description */}
               <div className="">
-=======
-            <CardContent className="flex-1 space-y-6">
-              {/* Description */}
-              <div>
->>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
                 <h3 className="font-semibold text-lg mb-2">Overview</h3>
                 <div
                   className="text-muted-foreground leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: project.description }}
                 />
               </div>
-<<<<<<< HEAD
             </CardContent>
 
             <CardHeader className="flex flex-col justify-center space-y-0 pb-4">
-=======
-
->>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
               {/* Project Links */}
               <div className="space-y-3">
                 <h3 className="font-semibold text-lg">Links</h3>
@@ -161,16 +144,11 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                   <div>
                     <span className="text-muted-foreground">Status:</span>
                     <p className="font-medium">
-<<<<<<< HEAD
                       {project.is_featured ? "Live" : "Archived"}
-=======
-                      {project.is_featured ? "Featured" : "Standard"}
->>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
                     </p>
                   </div>
                 </div>
               </div>
-<<<<<<< HEAD
             </CardHeader>
 
           </div>
@@ -178,12 +156,5 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
       </div>
     </div>,
     document.body
-=======
-            </CardContent>
-          </div>
-        </div>
-      </div>
-    </div>
->>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
   );
 }

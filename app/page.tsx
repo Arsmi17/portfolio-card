@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: "A customizable link sharing platform for all your important links",
 }
 
-<<<<<<< HEAD
 // export default function Home() {
 //   return (
 //     <main className="min-h-screen flex flex-col items-center justify-start p-4 pt-8 bg-secondary">
@@ -21,12 +20,4 @@ export default function Home() {
         <LinkTree />
       </main>
    )
-=======
-export default function Home() {
-  return (
-    <main className="min-h-screen flex flex-col items-center justify-start p-4 pt-8 bg-secondary">
-      <LinkTree />
-    </main>
-  )
->>>>>>> 3174677b7ffad27ccf9205b6b73a479e1da09565
 }
