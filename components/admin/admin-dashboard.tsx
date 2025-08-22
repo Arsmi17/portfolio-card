@@ -34,7 +34,6 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor"; // Import the
 import { Textarea } from "@/components/ui/textarea"
 import {
   EditProjectModal,
-  ViewProjectModal,
   DeleteProjectModal,
 } from './project-modals'
 

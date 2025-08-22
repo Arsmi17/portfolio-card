@@ -10,7 +10,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Project } from '@/lib/supabase/types'
-import ProjectModal from '@/components/project-modal'
 
 export function EditProjectModal({
   project,
@@ -114,32 +113,6 @@ export function EditProjectModal({
             <Button type="submit">Update</Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-export function ViewProjectModal({
-  project,
-  isOpen,
-  onClose,
-}: {
-  project: Project | null
-  isOpen: boolean
-  onClose: () => void
-}) {
-  if (!project) return null
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <ProjectModal
-          title={project.title}
-          description={project.description}
-          youtubeLink={project.youtube_link}
-          projectUrl={project.project_url}
-          category={project.category}
-        />
       </DialogContent>
     </Dialog>
   )
