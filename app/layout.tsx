@@ -27,8 +27,8 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "v0.me",
-  description: "Your personal link sharing platform",
+  title: "Harsh Mistry",
+  description: "Personal Portfolio of Harsh Mistry, a Game developer",
     generator: 'v0.app'
 }
 

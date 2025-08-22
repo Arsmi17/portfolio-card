@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import LinkTree from "@/components/link-tree"
 
 export const metadata: Metadata = {
-  title: "v0.me - Your Personal Link Page",
-  description: "A customizable link sharing platform for all your important links",
+  title: "Harsh Mistry",
+  description: "A Peronal Portfolio of Harsh Mistry, a Game Developer",
 }
 
 // export default function Home() {
