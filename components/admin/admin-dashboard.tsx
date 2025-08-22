@@ -32,11 +32,16 @@ import {
 import type { Project, Blog, ContactResponse, Profile } from "@/lib/supabase/types"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"; // Import the new editor
 import { Textarea } from "@/components/ui/textarea"
+import {
+  EditProjectModal,
+  ViewProjectModal,
+  DeleteProjectModal,
+} from './project-modals'
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
   { id: "projects", label: "Projects", icon: FolderOpen },
-  { id: "blog", label: "Blog", icon: FileText },
+  // { id: "blog", label: "Blog", icon: FileText },
   { id: "profile", label: "Profile", icon: User },
   { id: "contact-response", label: "Contact Response", icon: MessageSquare },
 ]
@@ -49,6 +54,10 @@ export default function AdminDashboard() {
   const [archivedResponses, setArchivedResponses] = useState<ContactResponse[]>([])
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const [projectSearch, setProjectSearch] = useState("")
   const [blogSearch, setBlogSearch] = useState("")
@@ -166,7 +175,6 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
-
   const handleBlogSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -213,136 +221,127 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
-
-  // const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-
-  //   const formData = new FormData(e.currentTarget);
-  //   const socialJsonString = formData.get("social") as string;
-  //   let socialData;
-
-  //   try {
-  //     socialData = JSON.parse(socialJsonString);
-  //   } catch (error) {
-  //     toast({
-  //       title: "Invalid JSON",
-  //       description: "The social links JSON is not correctly formatted.",
-  //       variant: "destructive",
-  //     });
-  //     setLoading(false);
-  //     return;
-  //   }
-
-  //   const profileData = {
-  //     name: formData.get("name") as string,
-  //     bio: formData.get("bio") as string,
-  //     contact: formData.get("contact") as string,
-  //     email: formData.get("email") as string,
-  //     cv_url: formData.get("cv_url") as string,
-  //     social: socialData,
-  //     avatar_url: formData.get("avatar") as string,
-  //   };
-
-  //   try {
-  //     const response = await fetch("/api/profile", {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(profileData),
-  //     });
-
-  //     if (response.ok) {
-  //       toast({
-  //         title: "Success",
-  //         description: "Profile updated successfully!",
-  //       });
-  //       fetchProfile();
-  //     } else {
-  //       const error = await response.json();
-  //       toast({
-  //         title: "Error",
-  //         description: error.error,
-  //         variant: "destructive",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to update profile",
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  const formData = new FormData(e.currentTarget);
+    const formData = new FormData(e.currentTarget);
 
-  // Validate social JSON
-  const socialJsonString = formData.get("social") as string;
-  try {
-    JSON.parse(socialJsonString || "{}"); // just validate
-  } catch (error) {
-    toast({
-      title: "Invalid JSON",
-      description: "The social links JSON is not correctly formatted.",
-      variant: "destructive",
-    });
-    setLoading(false);
-    return;
-  }
-
-  try {
-    const response = await fetch("/api/profile", {
-      method: "PUT",
-      body: formData, // send as multipart/form-data
-    });
-
-    if (response.ok) {
+    // Validate social JSON
+    const socialJsonString = formData.get("social") as string;
+    try {
+      JSON.parse(socialJsonString || "{}"); // just validate
+    } catch (error) {
       toast({
-        title: "Success",
-        description: "Profile updated successfully!",
-      });
-      fetchProfile();
-    } else {
-      const error = await response.json();
-      toast({
-        title: "Error",
-        description: error.error,
+        title: "Invalid JSON",
+        description: "The social links JSON is not correctly formatted.",
         variant: "destructive",
       });
+      setLoading(false);
+      return;
     }
-  } catch (error) {
-    toast({
-      title: "Error",
-      description: "Failed to update profile",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const handleDeleteProject = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return
 
     try {
-      const response = await fetch(`/api/projects/${id}`, { method: "DELETE" })
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        body: formData, // send as multipart/form-data
+      });
+
       if (response.ok) {
-        toast({ title: "Success", description: "Project deleted successfully!" })
-        fetchProjects()
+        toast({
+          title: "Success",
+          description: "Profile updated successfully!",
+        });
+        fetchProfile();
       } else {
-        toast({ title: "Error", description: "Failed to delete project", variant: "destructive" })
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      toast({ title: "Error", description: "Failed to delete project", variant: "destructive" })
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleEditClick = (project: Project) => {
+    setSelectedProject(project)
+    setIsEditModalOpen(true)
+  }
+  const handleDeleteClick = (project: Project) => {
+    setSelectedProject(project)
+    setIsDeleteModalOpen(true)
+  }
+  const handleUpdateProject = async (updatedProject: Project) => {
+    try {
+      const response = await fetch(`/api/projects/${updatedProject.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProject),
+      })
+
+      // Key Change: Check for non-JSON responses before parsing
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const responseText = await response.text()
+        throw new Error(`Server sent an unexpected response: ${responseText}`)
+      }
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update project.')
+      }
+
+      setProjects(projects.map(p => (p.id === result.id ? result : p)))
+      setIsEditModalOpen(false)
+      toast({ title: 'Success', description: 'Project updated successfully' })
+    } catch (error) {
+      console.error('Update Error:', error)
+      toast({
+        title: 'Update Failed',
+        description: (error as Error).message,
+        variant: 'destructive',
+      })
     }
   }
+  const handleDeleteProject = async (id: string) => {
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+      })
 
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const responseText = await response.text()
+        throw new Error(`Server sent an unexpected response: ${responseText}`)
+      }
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete project.')
+      }
+
+      setProjects(projects.filter(p => p.id !== id))
+      setIsDeleteModalOpen(false)
+      toast({ title: 'Success', description: 'Project deleted successfully' })
+    } catch (error) {
+      console.error('Delete Error:', error)
+      toast({
+        title: 'Delete Failed',
+        description: (error as Error).message,
+        variant: 'destructive',
+      })
+    }
+  }
   const handleDeleteBlog = async (id: string) => {
     if (!confirm("Are you sure you want to delete this blog post?")) return
 
@@ -358,7 +357,6 @@ export default function AdminDashboard() {
       toast({ title: "Error", description: "Failed to delete blog post", variant: "destructive" })
     }
   }
-
   const handleArchiveContact = async (id: string) => {
     try {
       const response = await fetch(`/api/contact/${id}`, {
@@ -374,7 +372,6 @@ export default function AdminDashboard() {
       toast({ title: "Error", description: "Failed to archive contact", variant: "destructive" })
     }
   }
-
   const handleDeleteContact = async (id: string) => {
     if (!confirm("Are you sure you want to permanently delete this contact response?")) return
 
@@ -538,17 +535,7 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <Label htmlFor="category">Category</Label>
-                    <Select name="category" required>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Web Development">Web Development</SelectItem>
-                        <SelectItem value="Mobile App">Mobile App</SelectItem>
-                        <SelectItem value="Dashboard">Dashboard</SelectItem>
-                        <SelectItem value="API">API</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <Input id="category" name="category" placeholder="e.g. Web Development, Mobile App" required />
                   </div>
                   <div className="flex items-center space-x-2">
                     <input type="checkbox" id="is_featured" name="is_featured" className="rounded" />
@@ -608,18 +595,20 @@ export default function AdminDashboard() {
                             <TableCell className="font-medium">{project.title}</TableCell>
                             <TableCell className="max-w-xs truncate">{project.description}</TableCell>
                             <TableCell>
-                              <Badge variant="outline">{project.category}</Badge>
+                              {/* <Badge variant="outline">{project.category}</Badge> */}
+                              {project.category.split(',').map(cat => (
+                                <Badge key={cat} variant="outline" className="w-fit">
+                                  {cat.trim()}
+                                </Badge>
+                              ))}
                             </TableCell>
                             <TableCell>{project.is_featured ? "✓" : "✗"}</TableCell>
                             <TableCell>
                               <div className="flex gap-1">
-                                <Button size="sm" variant="outline">
+                                <Button size="sm" variant="outline" onClick={() => handleEditClick(project)}>
                                   <Edit className="w-3 h-3" />
                                 </Button>
-                                <Button size="sm" variant="outline">
-                                  <Eye className="w-3 h-3" />
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => handleDeleteProject(project.id)}>
+                                <Button size="sm" variant="outline" onClick={() => handleDeleteClick(project)}>
                                   <Trash2 className="w-3 h-3" />
                                 </Button>
                               </div>
@@ -630,6 +619,19 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
                 </div>
+                                  <EditProjectModal
+                    project={selectedProject}
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onUpdate={handleUpdateProject}
+                  />
+                  <DeleteProjectModal
+                    project={selectedProject}
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onDelete={handleDeleteProject}
+                  />
+
               </CardContent>
             </Card>
           </div>
@@ -1045,4 +1047,5 @@ export default function AdminDashboard() {
       </main>
     </div>
   )
+
 }

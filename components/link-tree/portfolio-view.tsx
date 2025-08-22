@@ -107,6 +107,16 @@ export function PortfolioView({ profile: initialProfile, links }: PortfolioViewP
   }, []);
 
 
+  useEffect(() => {
+    if (projects.length > 1) {
+      const projectInterval = setInterval(() => {
+        nextProject();
+      }, 5000); // The interval in milliseconds (e.g., 5000ms = 5 seconds)
+
+      return () => clearInterval(projectInterval); // Cleanup on component unmount
+    }
+  }, [projects.length, currentProject]); // Rerun when project count or current project changes
+
   const getSocialButtons = () => {
     if (!profile?.social) return []
 
@@ -335,18 +345,25 @@ export function PortfolioView({ profile: initialProfile, links }: PortfolioViewP
                 </Card>
 
                     {/* New View CV Button */}
-    {displayProfile.cv_url && (
-        <Button className="w-full" variant="default" asChild>
-          <a
-            href={displayProfile.cv_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2"
-          >
-            <span>Explore CV</span>
-          </a>
-        </Button>
-    )}
+                    {displayProfile.cv_url && (
+                        <Button
+                          className="w-full relative overflow-hidden group" // Add these classes
+                          variant="default"
+                          asChild
+                        >
+                          <a
+                            href={displayProfile.cv_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2"
+                          >
+                            <span className="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
+                            <span className="relative">Explore CV</span>
+                            <span className="absolute top-0 left-0 w-full h-full bg-white opacity-10 shine-effect"></span>
+                          </a>
+                        </Button>
+                    )}
+
               </div>
             </CardContent>
           </Card>
@@ -424,11 +441,12 @@ export function PortfolioView({ profile: initialProfile, links }: PortfolioViewP
                               }}
                             />
                             <div className="flex flex-wrap gap-1">
-  <Badge variant="default">
-    {project.category}
-  </Badge>
-</div>
-
+                              {project.category.split(',').map(cat => (
+                                <Badge key={cat} variant="default">
+                                  {cat.trim()}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )

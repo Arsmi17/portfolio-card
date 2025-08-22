@@ -1,62 +1,74 @@
-import { createClient } from "@/lib/supabase/server";
-import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
 
 export async function PUT(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createClient();
+  const supabase = createClient() // Corrected line
+  const { id } = params
+  const {
+    title,
+    description,
+    youtube_link,
+    project_url,
+    category,
+    is_featured,
+  } = await request.json()
 
-  try {
-    const body = await request.json();
-    const {
+  const { data, error } = await supabase
+    .from('projects')
+    .update({
       title,
       description,
-      image_url,
+      youtube_link,
       project_url,
       category,
       is_featured,
-    } = body;
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single()
 
-    const { data: project, error } = await supabase
-      .from("projects")
-      .update({
-        title,
-        description,
-        image_url,
-        project_url,
-        category,
-        is_featured,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", params.id)
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json(project);
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Invalid request body" },
-      { status: 400 }
-    );
+  if (error) {
+    console.error('Error updating project:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
+  if (!data) {
+    return NextResponse.json(
+      { error: 'Project not found or update failed due to permissions.' },
+      { status: 404 }
+    )
+  }
+
+  return NextResponse.json(data)
 }
 
 export async function DELETE(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createClient();
+  const supabase = createClient() // Corrected line
+  const { id } = params
 
-  const { error } = await supabase.from("projects").delete().eq("id", params.id);
+  const { data, error } = await supabase
+    .from('projects')
+    .delete()
+    .eq('id', id)
+    .select()
+    .single()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Error deleting project:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+  if (!data) {
+    return NextResponse.json(
+      { error: 'Project not found or delete failed due to permissions.' },
+      { status: 404 }
+    )
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ message: 'Project deleted successfully', deletedProject: data })
 }

@@ -65,9 +65,11 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                 <CardTitle className="text-2xl font-bold">
                   {project.title}
                 </CardTitle>
-                <Badge variant="outline" className="w-fit">
-                  {project.category}
-                </Badge>
+                  {project.category.split(',').map(cat => (
+                    <Badge key={cat} variant="outline" className="w-fit">
+                      {cat.trim()}
+                    </Badge>
+                  ))}
               </div>
               <Button
                 variant="ghost"
