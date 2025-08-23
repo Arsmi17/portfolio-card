@@ -16,7 +16,7 @@ export async function verifyOTP(prevState: any, formData: FormData) {
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/auth/verify-otp`,
+      `${process.env.NEXT_PUBLIC_SITE_URL || "https://harsh-portfolio-ivory.vercel.app"}/api/auth/verify-otp`,
       {
         method: "POST",
         headers: {
